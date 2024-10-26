@@ -7,3 +7,9 @@
 [submodule "Dark-Render/vendor/DirectX-Headers"]
 	path = Dark-Render/vendor/DirectX-Headers
 	url = https://github.com/microsoft/DirectX-Headers
+[submodule "Render-Example/vendor/glfw"]
+	path = Render-Example/vendor/glfw
+	url = https://github.com/Acmen-Team/glfw
+[submodule "Render-Example/vendor/imgui"]
+	path = Render-Example/vendor/imgui
+	url = https://github.com/Acmen-Team/imgui
