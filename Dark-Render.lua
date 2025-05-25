@@ -13,9 +13,18 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories relative to root folder(solution directory)
 IncludeDir = {}
-IncludeDir["DarkTools"] = "Dark-Render/vendor/Dark-Tools/include"
+IncludeDir["DarkToolsHeaders"] = "Dark-Render/vendor/Dark-Tools-Headers/Dark-Tools/include"
 IncludeDir["VulkanHeaders"] = "Dark-Render/vendor/Vulkan-Headers/include"
 IncludeDir["DirectXHeaders"] = "Dark-Render/vendor/DirectX-Headers/include"
+IncludeDir["Glfw"] = "Render-Example/vendor/glfw/include"
+IncludeDir["ImGui"] = "Render-Example/vendor/imgui"
+IncludeDir["Glad"] = "Render-Example/vendor/glad/include"
+
+group "Dependencies"
+	include "Render-Example/vendor/glfw"
+	include "Render-Example/vendor/imgui"
+	include "Render-Example/vendor/glad"
+group ""
 
 project "Dark-Render"
 	location "Dark-Render"
@@ -42,14 +51,17 @@ project "Dark-Render"
 	includedirs
 	{
 		"%{prj.name}/include",
-		"%{IncludeDir.DarkTools}",
+		"%{IncludeDir.DarkToolsHeaders}",
 		"%{IncludeDir.VulkanHeaders}",
 		"%{IncludeDir.DirectXHeaders}",
 	}
 
 	links
 	{
+		"Dark-Tools"
 	}
+
+	libdirs { "Test/downloads" }
 
 	filter "system:windows"
 		systemversion "latest"
@@ -93,17 +105,25 @@ project "Render-Example"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
 	}
 
 	includedirs
 	{
 		"Dark-Render/include",
+		"%{IncludeDir.DarkToolsHeaders}",
+		"%{IncludeDir.Glfw}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.Glad}",
 	}
 
 	links
 	{
-		"Dark-Render"
+		"Dark-Render",
+		"Glfw",
+		"ImGui",
+		"Glad",
+		"opengl32.lib",
 	}
 	
 	filter "system:windows"
