@@ -6,7 +6,7 @@
 namespace DRender
 {
 
-	void DRender::RenderGraph::AddPass(RenderPass* pass)
+	void RenderGraph::AddPass(RenderPass* pass)
 	{
 		m_Passes.push_back(pass);
 	}
