@@ -167,18 +167,28 @@ int main()
 
 	RenderPass* clearPass = new RenderPass("ClearPass");
 	clearPass->SetExexute([&]() {
+		glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "ClearPass");
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		glPopDebugGroup();
 	});
 
 	RenderPass* drawPass = new RenderPass("DrawPass");
 	drawPass->SetExexute([&]() {
+		glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "DrawPass");
 		glBindTexture(GL_TEXTURE_2D, resourceRegistry->Get<GLuint>("ColorBuffer"));
 		glUseProgram(resourceRegistry->Get<GLuint>("ShaderProgram"));
 		glBindVertexArray(resourceRegistry->Get<GLuint>("VertexArray"));
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glPopDebugGroup();
 	});
+	drawPass->AddReadResources("VertexArray");
+	drawPass->AddReadResources("VertexBuffer");
+	drawPass->AddReadResources("VertexShader");
+	drawPass->AddReadResources("FragmentShader");
+	drawPass->AddReadResources("ShaderProgram");
+	drawPass->AddWriteResources("ColorBuffer");
 
 	renderGraph.AddPass(clearPass);
 	renderGraph.AddPass(drawPass);

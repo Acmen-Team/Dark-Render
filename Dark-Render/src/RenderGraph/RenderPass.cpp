@@ -16,14 +16,14 @@ namespace DRender
 		m_ExecuteFunc = func;
 	}
 
-	void RenderPass::AddInput(const std::string& input)
+	void RenderPass::AddReadResources(const std::string& read)
 	{
-		m_Inputs.push_back(input);
+		m_ReadResources.push_back(read);
 	}
 
-	void RenderPass::AddOutput(const std::string& output)
+	void RenderPass::AddWriteResources(const std::string& write)
 	{
-		m_Outputs.push_back(output);
+		m_WriteResource.push_back(write);
 	}
 
 	void RenderPass::Execute()
