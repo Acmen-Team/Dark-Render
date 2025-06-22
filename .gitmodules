@@ -13,3 +13,6 @@
 [submodule "Render-Example/vendor/imgui"]
 	path = Render-Example/vendor/imgui
 	url = https://github.com/Acmen-Team/imgui
+[submodule "Dark-Render/vendor/Dark-Resources-Headers"]
+	path = Dark-Render/vendor/Dark-Resources-Headers
+	url = https://github.com/Acmen-Team/Dark-Resources-Headers
