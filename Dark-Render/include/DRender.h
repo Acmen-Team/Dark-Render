@@ -12,7 +12,14 @@
 #define DKRENDER_VERSION_MINOR 1
 #define DKRENDER_VERSION_PATCH 0
 
-// Include the necessary headers for the library
+// Include the render graph headers
 #include <RenderGraph/RenderGraph.h>
 #include <RenderGraph/RenderPass.h>
-#include <RenderGraph/ResourceRegistry.h>
+
+// Include the render backend headers
+#include <RenderBackend/ICommandBuffer.h>
+#include <RenderBackend/IRenderBackend.h>
+#include <RenderBackend/RenderBackendFactory.h>
+
+// Include the render resources headers
+#include <RenderResources/TextureFactory.h>
