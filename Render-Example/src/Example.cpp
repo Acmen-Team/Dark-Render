@@ -1,11 +1,11 @@
-#include <iostream>
-#include <windows.h>
-
-#include <glad/glad.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 
 #include <DRender.h>
 
+#include <iostream>
+#include <windows.h>
 /*
 * This is a simple example of using the DRender library to create a triangle
 */
@@ -59,148 +59,84 @@ int main()
 
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-	if (status == 0)
+	//glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+	// Initialize the DRender library, this will also initialize the OpenGL context
+	IRenderBackend* glRenderBackend = RenderBackendFactory::Create(RenderBackendType::OpenGL, glfwGetWin32Window(window));
+	if (!glRenderBackend)
 	{
-		std::cerr << "Failed to initialize GLAD" << std::endl;
+		std::cerr << "Failed to create OpenGL render backend." << std::endl;
 		return -1;
 	}
-	//gladLoadGL();
 
-	ResourceRegistry* resourceRegistry = new ResourceRegistry();
+	// 获取 HWND 和 HDC
+	HWND hwnd = glfwGetWin32Window(window);      // 需要包含 <GLFW/glfw3native.h>
+	// 获取主上下文句柄
+	HGLRC mainCtx = wglGetCurrentContext();
 
-	resourceRegistry->Register(
-		"ColorBuffer",
-		[]() -> std::any {
-			GLuint colorBuffer;
-			glGenTextures(1, &colorBuffer);
-			glBindTexture(GL_TEXTURE_2D, colorBuffer);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 640, 480, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			return colorBuffer;
-		},
-		[&resourceRegistry]() {
-			GLuint colorBuffer = resourceRegistry->Get<GLuint>("ColorBuffer");
-			glDeleteTextures(1, &colorBuffer);
-		}
-	);
+	DRender::BackendInitInfo initInfo;
+	initInfo._NativeWindowHandle = static_cast<void*>(hwnd);
+	initInfo._SharedContext = static_cast<void*>(mainCtx);
+	initInfo._PlatformHandle = nullptr;
 
-	resourceRegistry->Register(
-		"VertexArray",
-		[]() -> std::any {
-			GLuint VAO;
-			glGenVertexArrays(1, &VAO);
-			glBindVertexArray(VAO);
-			return VAO;
-		},
-		[&resourceRegistry]() {
-			GLuint VAO = resourceRegistry->Get<GLuint>("VertexArray");
-			glBindVertexArray(0);
-			glDeleteVertexArrays(1, &VAO);
-		}
-	);
+	glRenderBackend->Initialize(&initInfo);
 
-	resourceRegistry->Register(
-		"VertexBuffer",
-		[]() -> std::any {
-			GLuint VBO;
-			glGenBuffers(1, &VBO);
-			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-			glEnableVertexAttribArray(0);
-			return VBO;
-		},
-		[&resourceRegistry]() {
-			GLuint VBO = resourceRegistry->Get<GLuint>("VertexBuffer");
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glDeleteBuffers(1, &VBO);
-		}
-	);
-
-	resourceRegistry->Register(
-		"VertexShader",
-		[]() -> std::any {
-			GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-			glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-			glCompileShader(vertexShader);
-			return vertexShader;
-		},
-		[&resourceRegistry]() {
-			GLuint vertexShader = resourceRegistry->Get<GLuint>("VertexShader");
-			glDeleteShader(vertexShader);
-		}
-	);
-
-	resourceRegistry->Register(
-		"FragmentShader",
-		[]() -> std::any {
-			GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-			glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-			glCompileShader(fragmentShader);
-			return fragmentShader;
-		},
-		[&resourceRegistry]() {
-			GLuint fragmentShader = resourceRegistry->Get<GLuint>("FragmentShader");
-			glDeleteShader(fragmentShader);
-		}
-	);
-
-	resourceRegistry->Register(
-		"ShaderProgram",
-		[&resourceRegistry]() -> std::any {
-			GLuint shaderProgram = glCreateProgram();
-			glAttachShader(shaderProgram, resourceRegistry->Get<GLuint>("VertexShader"));
-			glAttachShader(shaderProgram, resourceRegistry->Get<GLuint>("FragmentShader"));
-			glLinkProgram(shaderProgram);
-			return shaderProgram;
-		},
-		[&resourceRegistry]() {
-			GLuint shaderProgram = resourceRegistry->Get<GLuint>("ShaderProgram");
-			glDeleteProgram(shaderProgram);
-		}
-	);
-
+	// Create a render graph
 	RenderGraph renderGraph;
-	renderGraph.SetResourceRegistry(resourceRegistry);
 
-	RenderPass* clearPass = new RenderPass("ClearPass");
-	clearPass->SetExexute([&]() {
-		glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "ClearPass");
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glPopDebugGroup();
+	// Create a render pass
+	RenderPass renderPass("TrianglePass");
+	// Create a command buffer for this render pass
+	ICommandBuffer* glCommandBuffer = glRenderBackend->CreateCommandBuffer();
+
+	RenderPassDescription passDesc;
+	passDesc.framebuffer = 0; // Use default framebuffer
+	passDesc.width = 640;
+	passDesc.height = 480;
+
+	passDesc.clearColor = true;
+	passDesc.clearColorValue = { 0.4f, 0.6f, 0.1f, 1.0f }; // Clear to black
+
+	passDesc.clearDepth = true;
+	passDesc.clearDepthValue = 1.0f; // Clear depth to 1.0
+
+	passDesc.enableDepthTest = true; // Enable depth testing
+	passDesc.enableBlending = false; // Disable blending
+
+	PipelineDescription pipelineDesc;
+	//pipelineDesc.shader.handle = glRenderBackend->CreateShaderProgram(vertexShaderSource, fragmentShaderSource);
+	pipelineDesc.shader.handle = 0; // Placeholder, replace with actual shader program creation
+	pipelineDesc.depthTestEnable = true;
+	pipelineDesc.depthWriteEnable = true;
+	pipelineDesc.blendEnable = false;
+	pipelineDesc.vertexAttributeLocations = { 0 }; // Assuming a single vertex attribute at location 0
+	pipelineDesc.cullMode = CullMode::Back; // Default cull mode
+	pipelineDesc.fillMode = FillMode::Solid; // Default fill mode
+
+	renderPass.SetExecute([&]() {
+		glCommandBuffer->Begin();
+
+		glCommandBuffer->BeginRenderPass(passDesc);
+		glCommandBuffer->BindPipeline(pipelineDesc);
+		//glCommandBuffer->Draw();
+		glCommandBuffer->EndRenderPass();
+
+		glCommandBuffer->End();
 	});
 
-	RenderPass* drawPass = new RenderPass("DrawPass");
-	drawPass->SetExexute([&]() {
-		glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "DrawPass");
-		glBindTexture(GL_TEXTURE_2D, resourceRegistry->Get<GLuint>("ColorBuffer"));
-		glUseProgram(resourceRegistry->Get<GLuint>("ShaderProgram"));
-		glBindVertexArray(resourceRegistry->Get<GLuint>("VertexArray"));
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glPopDebugGroup();
-	});
-	drawPass->AddReadResources("VertexArray");
-	drawPass->AddReadResources("VertexBuffer");
-	drawPass->AddReadResources("VertexShader");
-	drawPass->AddReadResources("FragmentShader");
-	drawPass->AddReadResources("ShaderProgram");
-	drawPass->AddWriteResources("ColorBuffer");
-
-	renderGraph.AddPass(clearPass);
-	renderGraph.AddPass(drawPass);
-
+	renderGraph.AddPass(&renderPass);
 	renderGraph.BuildGraph();
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
+		glRenderBackend->BeginFrame();
+
 		/* Render here */
 		/* Use the DRender library to draw something */
 		renderGraph.Execute();
+
+		glRenderBackend->EndFrame();
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
