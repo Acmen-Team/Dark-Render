@@ -14,16 +14,17 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include directories relative to root folder(solution directory)
 IncludeDir = {}
 IncludeDir["DarkToolsHeaders"] = "Dark-Render/vendor/Dark-Tools-Headers/Dark-Tools/include"
+IncludeDir["DarkResourcesHeaders"] = "Dark-Render/vendor/Dark-Resources-Headers/Dark-Resources/include"
+IncludeDir["Glad"] = "Dark-Render/vendor/glad/include"
 IncludeDir["VulkanHeaders"] = "Dark-Render/vendor/Vulkan-Headers/include"
 IncludeDir["DirectXHeaders"] = "Dark-Render/vendor/DirectX-Headers/include"
 IncludeDir["Glfw"] = "Render-Example/vendor/glfw/include"
 IncludeDir["ImGui"] = "Render-Example/vendor/imgui"
-IncludeDir["Glad"] = "Render-Example/vendor/glad/include"
 
 group "Dependencies"
 	include "Render-Example/vendor/glfw"
 	include "Render-Example/vendor/imgui"
-	include "Render-Example/vendor/glad"
+	include "Dark-Render/vendor/glad"
 group ""
 
 project "Dark-Render"
@@ -52,13 +53,17 @@ project "Dark-Render"
 	{
 		"%{prj.name}/include",
 		"%{IncludeDir.DarkToolsHeaders}",
+		"%{IncludeDir.DarkResourcesHeaders}",
+		"%{IncludeDir.Glad}",
 		"%{IncludeDir.VulkanHeaders}",
 		"%{IncludeDir.DirectXHeaders}",
 	}
 
 	links
 	{
-		"Dark-Tools"
+		"Dark-Tools",
+		"Dark-Resources",
+		"Glad",
 	}
 
 	libdirs { "Test/downloads" }
@@ -70,7 +75,7 @@ project "Dark-Render"
 		{
 			"DK_PLATFORM_WINDOWS",
 			"DK_DYNAMIC_LINK",
-			"DK_BUILD_DLL",
+			"DRENDER_BUILD_DLL",
 		}
 
 		postbuildcommands
@@ -111,7 +116,6 @@ project "Render-Example"
 	includedirs
 	{
 		"Dark-Render/include",
-		"%{IncludeDir.DarkToolsHeaders}",
 		"%{IncludeDir.Glfw}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.Glad}",
@@ -133,7 +137,7 @@ project "Render-Example"
 		{
 			"DK_PLATFORM_WINDOWS",
 			"DK_DYNAMIC_LINK",
-			"DK_ENABLE_ASSERTS",	
+			"DK_ENABLE_ASSERTS",
 		}
 
 	filter "configurations:Debug"
