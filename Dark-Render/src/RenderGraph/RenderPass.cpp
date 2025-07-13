@@ -11,7 +11,7 @@ namespace DRender
 		DK_CORE_INFO("RenderPass created: %s", name.c_str());
 	}
 
-	void RenderPass::SetExexute(std::function<void()> func)
+	void RenderPass::SetExecute(std::function<void()> func)
 	{
 		m_ExecuteFunc = func;
 	}
@@ -23,7 +23,7 @@ namespace DRender
 
 	void RenderPass::AddWriteResources(const std::string& write)
 	{
-		m_WriteResource.push_back(write);
+		m_WriteResources.push_back(write);
 	}
 
 	void RenderPass::Execute()

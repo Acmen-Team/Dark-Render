@@ -1,20 +1,21 @@
 #pragma once
+
+#include "RenderAPI.h"
+
 #include <string>
 #include <functional>
 #include <vector>
 
-#include <Macro/DynamicLinkMacros.h>
-
 namespace DRender
 {
 
-	class DARK_API RenderPass
+	class DRENDER_API RenderPass
 	{
 	public:
 		RenderPass(const std::string& name);
 
 		// Set the function to execute for this pass
-		void SetExexute(std::function<void()> func);
+		void SetExecute(std::function<void()> func);
 
 		// Add resources that this pass reads and writes
 		void AddReadResources(const std::string& read);
@@ -23,7 +24,7 @@ namespace DRender
 		// Get the resources this pass reads
 		const std::vector<std::string>& GetReadResources() const { return m_ReadResources; }
 		// Get the resources this pass writes
-		const std::vector<std::string>& GetWriteResources() const { return m_WriteResource; }
+		const std::vector<std::string>& GetWriteResources() const { return m_WriteResources; }
 		
 		// Execute the pass
 		void Execute();
@@ -35,7 +36,7 @@ namespace DRender
 		std::function<void()> m_ExecuteFunc;
 
 		std::vector<std::string> m_ReadResources;
-		std::vector<std::string> m_WriteResource;
+		std::vector<std::string> m_WriteResources;
 	};
 
 }

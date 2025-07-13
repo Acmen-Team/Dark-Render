@@ -1,11 +1,11 @@
 #pragma once
 
+#include "RenderAPI.h"
+
 #include <vector>
 #include <unordered_map>
 #include <string>
 #include <queue>
-
-#include <Macro/DynamicLinkMacros.h>
 
 namespace DRender
 {
@@ -14,7 +14,7 @@ namespace DRender
 	class RenderPass;
 	class ResourceRegistry;
 
-	class DARK_API RenderGraph
+	class DRENDER_API RenderGraph
 	{
 	public:
 		void AddPass(RenderPass* pass);

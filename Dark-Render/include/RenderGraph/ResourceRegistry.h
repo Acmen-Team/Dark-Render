@@ -1,16 +1,17 @@
 #pragma once
+
+#include "RenderAPI.h"
+
 #include <unordered_map>
 #include <string>
 #include <functional>
 #include <any>
 #include <stdexcept>
 
-#include <Macro/DynamicLinkMacros.h>
-
 namespace DRender
 {
 
-	class DARK_API ResourceRegistry {
+	class DRENDER_API ResourceRegistry {
 	public:
 		ResourceRegistry() = default;
 
