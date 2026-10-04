@@ -6,6 +6,10 @@ using namespace DResources;
 
 namespace DRender
 {
+	GLTexture2D::~GLTexture2D()
+	{
+		if (m_TextureID) glDeleteTextures(1, &m_TextureID);
+	}
 
 	TextureFormat GLTexture2D::GetFormat() const
 	{
@@ -39,7 +43,7 @@ namespace DRender
 
 	void GLTexture2D::Unbind() const
 	{
-		glBindTextureUnit(GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	void* GLTexture2D::GetNativeHandle() const
@@ -49,6 +53,9 @@ namespace DRender
 
 	void GLTexture2D::UploadTextureData(const void* pixelData, int width, int height, int channels)
 	{
+		if (!m_TextureID) glGenTextures(1, &m_TextureID);
+		m_Width = width;
+		m_Height = height;
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 		GLenum format = (channels == 4) ? GL_RGBA : GL_RGB;

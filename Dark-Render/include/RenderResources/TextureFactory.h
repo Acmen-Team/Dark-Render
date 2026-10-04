@@ -15,6 +15,8 @@ namespace DRender
 	class DRENDER_API TextureFactory
 	{
 	public:
+		static DResources::ITexture* CreateTexture();
+
 		static DResources::ITexture* CreateTextureFromeFile(const std::string& filePath);
 
 		static DResources::ITexture* CreateTextureFromeMemory(const void* pixelData, size_t size);

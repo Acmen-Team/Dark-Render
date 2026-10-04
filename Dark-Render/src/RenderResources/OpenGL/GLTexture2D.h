@@ -10,7 +10,7 @@ namespace DRender
 	public:
 		// Constructor for creating a texture from a file
 		GLTexture2D() = default;
-		virtual ~GLTexture2D() = default;
+		virtual ~GLTexture2D();
 
 		// Override methods from ITexture
 		virtual DResources::TextureFormat GetFormat() const override;
@@ -24,8 +24,6 @@ namespace DRender
 		virtual void Unbind() const override;
 
 		virtual void* GetNativeHandle() const override;
-
-	protected:
 		virtual void UploadTextureData(const void* pixelData, int width, int height, int channels) override;
 
 	private:

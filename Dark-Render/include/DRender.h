@@ -23,3 +23,6 @@
 
 // Include the render resources headers
 #include <RenderResources/TextureFactory.h>
+#include <RenderResources/MeshFactory.h>
+#include <RenderResources/ShaderFactory.h>
+#include <RenderResources/FrameBufferFactory.h>

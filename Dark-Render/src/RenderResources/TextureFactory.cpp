@@ -5,12 +5,28 @@
 #include "OpenGL/GLTexture2D.h"
 
 #include <DTools.h>
-#include <Resources/ITexture.h>
-
-using namespace DTools;
 
 namespace DRender
 {
+
+	DResources::ITexture* TextureFactory::CreateTexture()
+	{
+		DResources::ITexture* texture = nullptr;
+
+		switch (RenderBackendFactory::GetRenderBackendType())
+		{
+			case RenderBackendType::OpenGL:
+				texture = new GLTexture2D();
+				break;
+			//case RenderBackendType::Vulkan:
+			//	return new VulkanTexture2D();
+			default:
+				DK_CORE_ERROR("TextureFactory::CreateTexture: Unsupported render backend type.");
+				return nullptr;
+		}
+
+		return texture;
+	}
 
 	DResources::ITexture* TextureFactory::CreateTextureFromeFile(const std::string& filePath)
 	{

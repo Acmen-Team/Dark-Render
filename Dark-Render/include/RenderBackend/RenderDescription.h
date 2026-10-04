@@ -1,7 +1,16 @@
 #pragma once
 
+#include <Core/Core.h>
+
+namespace DResources
+{
+	class IMaterial;
+}
+
 namespace DRender
 {
+
+	class IFrameBuffer;
 
 	struct ClearColor
 	{
@@ -15,7 +24,7 @@ namespace DRender
 	{
 		// Define the structure for render pass description
 		// This could include color attachments, depth attachments, etc.
-		uint32_t framebuffer = 0; // Placeholder for framebuffer ID
+		Ref<IFrameBuffer> _Framebuffer = nullptr; // Placeholder for framebuffer ID
 
 		uint32_t width = 0;
 		uint32_t height = 0;
@@ -48,22 +57,14 @@ namespace DRender
 		Fragment
 	};
 
-	struct ShaderProgram {
-		uint32_t handle = 0; // OpenGL shader program ID
-		// Vulkan ¿ÉÒÔÓÃ VkPipeline »ò pipeline layout Ö®Àà
-	};
-
 	struct PipelineDescription
 	{
-		// Define the structure for pipeline description
-		// This could include shader stages, input layout, etc.
-		// Shader program
-		ShaderProgram shader;
+		Ref<DResources::IMaterial> _Material;
 
-		// ¶¥µãÊäÈë²¼¾Ö£¨¿ÉÑ¡¼ò»¯£©
-		std::vector<int> vertexAttributeLocations; // ÀýÈçÎ»ÖÃ 0 = position, 1 = uv, etc.
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë²¼ï¿½Ö£ï¿½ï¿½ï¿½Ñ¡ï¿½ò»¯£ï¿½
+		std::vector<int> vertexAttributeLocations; // ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ 0 = position, 1 = uv, etc.
 
-		// ×´Ì¬ÉèÖÃ
+		// ×´Ì¬ï¿½ï¿½ï¿½ï¿½
 		bool depthTestEnable = true;
 		bool depthWriteEnable = true;
 

@@ -2,6 +2,18 @@
 
 #include <glad/glad.h>
 
+#include "RenderResources/OpenGL/GLMesh.h"
+#include "RenderResources/OpenGL/GLShader.h"
+#include "RenderResources/OpenGL/GLFrameBuffer.h"
+#include <Resources/IMaterial.h>
+
+#include <DTools.h>
+
+#include <memory>
+#include <stdexcept>
+
+using namespace DTools;
+
 namespace DRender
 {
 
@@ -17,11 +29,12 @@ namespace DRender
 
 	void GLCommandBuffer::BeginRenderPass(const RenderPassDescription& rpDesc)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, rpDesc.framebuffer);
-
-		glViewport(0, 0, rpDesc.width, rpDesc.height);
+		//std::dynamic_pointer_cast<GLFrameBuffer>(rpDesc._Framebuffer.g)->Bind();
+		//rpDesc._Framebuffer->Bind();
+		std::dynamic_pointer_cast<GLFrameBuffer>(const_cast<std::shared_ptr<IFrameBuffer>&>(rpDesc._Framebuffer))->Bind();
 
 		GLbitfield clearMask = 0;
+		glDepthMask(GL_TRUE);
 		if (rpDesc.clearColor)
 		{
 			clearMask |= GL_COLOR_BUFFER_BIT;
@@ -64,14 +77,7 @@ namespace DRender
 
 	void GLCommandBuffer::BindPipeline(const PipelineDescription& plDesc)
 	{
-		if (plDesc.shader.handle != 0)
-		{
-			glUseProgram(plDesc.shader.handle);
-		}
-		else
-		{
-			glUseProgram(0); // Unbind shader program
-		}
+		plDesc._Material->Bind();
 
 		if (plDesc.depthTestEnable)
 		{
@@ -133,4 +139,16 @@ namespace DRender
 		}
 	}
 
+	void GLCommandBuffer::DrawMesh(DResources::IMesh* mesh)
+    {
+        if(!mesh) throw std::invalid_argument("Null mesh");
+        for(size_t i=0;i<mesh->GetSubMeshCount();++i) DrawSubMesh(mesh,i);
+    }
+    void GLCommandBuffer::DrawSubMesh(DResources::IMesh* mesh,size_t index)
+    {
+        auto* glMesh=dynamic_cast<GLMesh*>(mesh);
+        if(!glMesh || index>=glMesh->GetVertexArrays().size()) throw std::invalid_argument("Invalid OpenGL submesh");
+        const auto& array=glMesh->GetVertexArrays().at(index);
+        array->Bind(); glDrawElements(GL_TRIANGLES,array->GetIndexBuffer()->GetCount(),GL_UNSIGNED_INT,nullptr); array->Unbind();
+    }
 }

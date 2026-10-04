@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RenderAPI.h"
+#include <Core/Core.h>
 
 #include <string>
 
@@ -17,12 +18,13 @@ namespace DRender
 	class DRENDER_API RenderBackendFactory
 	{
 	public:
-		static IRenderBackend* Create(RenderBackendType type, void* nativeWindowHandle);
+		static Ref<IRenderBackend> Create(RenderBackendType type, void* nativeWindowHandle);
 
 		static const char* GetRenderBackendName();
 		static RenderBackendType GetRenderBackendType();
 
 	private:
 		static RenderBackendType s_RenderBackendType;
+		static Ref<IRenderBackend> s_RenderBackendPtr;
 	};
 }

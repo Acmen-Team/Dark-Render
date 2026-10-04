@@ -8,8 +8,9 @@ namespace DRender
 {
 
 	RenderBackendType RenderBackendFactory::s_RenderBackendType;
+	Ref<IRenderBackend> RenderBackendFactory::s_RenderBackendPtr;
 
-	IRenderBackend* RenderBackendFactory::Create(RenderBackendType type, void* nativeWindowHandle)
+	Ref<IRenderBackend> RenderBackendFactory::Create(RenderBackendType type, void* nativeWindowHandle)
 	{
 		if(nativeWindowHandle == nullptr)
 		{
@@ -21,7 +22,7 @@ namespace DRender
 		switch (s_RenderBackendType)
 		{
 			case RenderBackendType::OpenGL:
-				return new GLRenderBackend();
+				return CreateRef<GLRenderBackend>();
 			//case RenderBackendType::Vulkan:
 			//	return new VulkanRenderBackend(nativeWindowHandle);
 			default:

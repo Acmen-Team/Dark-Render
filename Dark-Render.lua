@@ -32,7 +32,7 @@ project "Dark-Render"
 	kind "SharedLib"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "On"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -52,6 +52,7 @@ project "Dark-Render"
 	includedirs
 	{
 		"%{prj.name}/include",
+		"%{prj.name}/src",
 		"%{IncludeDir.DarkToolsHeaders}",
 		"%{IncludeDir.DarkResourcesHeaders}",
 		"%{IncludeDir.Glad}",
@@ -102,7 +103,7 @@ project "Render-Example"
 	location "Render-Example"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "On"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -116,6 +117,8 @@ project "Render-Example"
 	includedirs
 	{
 		"Dark-Render/include",
+		"%{IncludeDir.DarkToolsHeaders}",
+		"%{IncludeDir.DarkResourcesHeaders}",
 		"%{IncludeDir.Glfw}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.Glad}",
@@ -124,12 +127,15 @@ project "Render-Example"
 	links
 	{
 		"Dark-Render",
+		"Dark-Resources",
 		"Glfw",
 		"ImGui",
 		"Glad",
 		"opengl32.lib",
 	}
-	
+
+	libdirs { "Test/downloads" }
+
 	filter "system:windows"
 		systemversion "latest"
 
