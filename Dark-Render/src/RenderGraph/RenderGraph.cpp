@@ -4,6 +4,8 @@
 #include "RenderGraph/ResourceRegistry.h"
 
 #include <DTools.h>
+#include <algorithm>
+#include <stdexcept>
 
 using namespace DTools;
 
@@ -29,8 +31,27 @@ namespace DRender
 		m_ResourceDependencies.clear();
 		for (auto pass : m_Passes)
 		{
-			const std::string passnName = pass->GetName();
-			m_ResourceDependencies[passnName] = std::vector<std::string>();
+			const std::string passName = pass->GetName();
+			auto& dependencies = m_ResourceDependencies[passName];
+			dependencies.clear();
+			for (const auto& dependencyName : pass->GetDependencies())
+			{
+				const bool dependencyExists = std::any_of(m_Passes.begin(), m_Passes.end(),
+					[&dependencyName](const RenderPass* dependencyPass)
+					{
+						return dependencyPass->GetName() == dependencyName;
+					});
+
+				if (dependencyName == passName || !dependencyExists)
+				{
+					throw std::invalid_argument("Invalid explicit render pass dependency: " + dependencyName);
+				}
+
+				if (std::find(dependencies.begin(), dependencies.end(), dependencyName) == dependencies.end())
+				{
+					dependencies.push_back(dependencyName);
+				}
+			}
 
 			for (const auto& read : pass->GetReadResources())
 			{
@@ -39,9 +60,8 @@ namespace DRender
 					// Add dependencies for this resource
 					for (const auto& writer : resourceWriters[read])
 					{
-						if (writer != passnName) // Avoid self-dependency
+						if (writer != passName) // Avoid self-dependency
 						{
-							auto &dependencies = m_ResourceDependencies[passnName];
 							if (std::find(dependencies.begin(), dependencies.end(), writer) == dependencies.end())
 							{
 								dependencies.push_back(writer);

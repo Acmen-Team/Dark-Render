@@ -21,6 +21,17 @@ namespace DRender
 		void AddReadResources(const std::string& read);
 		void AddWriteResources(const std::string& write);
 
+		// Ordering dependency independent of sampled resources.
+		void AddDependency(const std::string& passName)
+		{
+			m_Dependencies.push_back(passName);
+		}
+
+		const std::vector<std::string>& GetDependencies() const
+		{
+			return m_Dependencies;
+		}
+
 		// Get the resources this pass reads
 		const std::vector<std::string>& GetReadResources() const { return m_ReadResources; }
 		// Get the resources this pass writes
@@ -37,6 +48,7 @@ namespace DRender
 
 		std::vector<std::string> m_ReadResources;
 		std::vector<std::string> m_WriteResources;
+		std::vector<std::string> m_Dependencies;
 	};
 
 }
