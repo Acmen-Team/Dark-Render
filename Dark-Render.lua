@@ -12,7 +12,14 @@ workspace "Dark-Render"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories relative to root folder(solution directory)
+newoption
+{
+	trigger = "feature-headers",
+	value = "PATH",
+	description = "Public Feature headers repository"
+}
 IncludeDir = {}
+IncludeDir["DarkFeatureHeaders"] = (_OPTIONS["feature-headers"] or "../Dark-Feature-Headers") .. "/Dark-Feature/include"
 IncludeDir["DarkToolsHeaders"] = "Dark-Render/vendor/Dark-Tools-Headers/Dark-Tools/include"
 IncludeDir["DarkResourcesHeaders"] = "Dark-Render/vendor/Dark-Resources-Headers/Dark-Resources/include"
 IncludeDir["Glad"] = "Dark-Render/vendor/glad/include"
@@ -54,6 +61,7 @@ project "Dark-Render"
 		"%{prj.name}/include",
 		"%{prj.name}/src",
 		"%{IncludeDir.DarkToolsHeaders}",
+		"%{IncludeDir.DarkFeatureHeaders}",
 		"%{IncludeDir.DarkResourcesHeaders}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.VulkanHeaders}",
@@ -118,6 +126,7 @@ project "Render-Example"
 	{
 		"Dark-Render/include",
 		"%{IncludeDir.DarkToolsHeaders}",
+		"%{IncludeDir.DarkFeatureHeaders}",
 		"%{IncludeDir.DarkResourcesHeaders}",
 		"%{IncludeDir.Glfw}",
 		"%{IncludeDir.ImGui}",

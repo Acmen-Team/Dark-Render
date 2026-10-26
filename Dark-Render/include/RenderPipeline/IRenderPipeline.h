@@ -1,9 +1,15 @@
 #pragma once
 
-#include "RenderFeature/IRenderFeature.h"
+#include "RenderGraph/RenderGraph.h"
 #include "RenderBackend/ICommandBuffer.h"
 
-namespace DRender {
+namespace DFeature
+{
+	class IRenderFeature;
+}
+
+namespace DRender
+{
 
 	struct RenderPipelineDesc
 	{
@@ -21,7 +27,7 @@ namespace DRender {
 		// Initialize the render pipeline
 		virtual void Initialize(const RenderPipelineDesc& desc) = 0;
 
-		virtual void RegisterRenderFeature(Ref<IRenderFeature> feature) = 0;
+		virtual void RegisterRenderFeature(Ref<DFeature::IRenderFeature> feature) = 0;
 
 		virtual void BuildRenderGraph() = 0;
 

@@ -4,8 +4,10 @@
 #include "RenderGraph/RenderPass.h"
 
 #include <DTools.h>
+#include <Feature/IRenderFeature.h>
 
-namespace DRender {
+namespace DRender
+{
 
 	void ForwardRenderPipeline::Initialize(const RenderPipelineDesc& desc)
 	{
@@ -40,7 +42,7 @@ namespace DRender {
 		}
 	}
 
-	void ForwardRenderPipeline::RegisterRenderFeature(Ref<IRenderFeature> feature)
+	void ForwardRenderPipeline::RegisterRenderFeature(Ref<DFeature::IRenderFeature> feature)
 	{
 		if (feature == nullptr)
 		{
@@ -65,7 +67,7 @@ namespace DRender {
 		{
 			if (feature)
 			{
-
+				feature->RegisterRenderPass(*m_RenderGraph);
 			}
 		}
 

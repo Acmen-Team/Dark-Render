@@ -2,7 +2,8 @@
 
 #include "RenderPipeline/IRenderPipeline.h"
 
-namespace DRender {
+namespace DRender
+{
 
 	class ForwardRenderPipeline : public IRenderPipeline
 	{
@@ -11,7 +12,7 @@ namespace DRender {
 
 		void Initialize(const RenderPipelineDesc& desc) override;
 
-		void RegisterRenderFeature(Ref<IRenderFeature> feature) override;
+		void RegisterRenderFeature(Ref<DFeature::IRenderFeature> feature) override;
 
 		void BuildRenderGraph() override;
 
@@ -22,9 +23,7 @@ namespace DRender {
 		Ref<ICommandBuffer> m_RenderCommandBuffer = nullptr;
 		bool m_UseDepthPrepass = false;
 
-		// Add any additional members needed for the forward render pipeline
-		// For example, a list of registered render features, etc.
-		std::vector<Ref<IRenderFeature>> m_RenderFeatures;
+		std::vector<Ref<DFeature::IRenderFeature>> m_RenderFeatures;
 	};
 
 }
