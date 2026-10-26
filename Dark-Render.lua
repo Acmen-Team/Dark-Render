@@ -75,7 +75,11 @@ project "Dark-Render"
 		"Glad",
 	}
 
-	libdirs { "Test/downloads" }
+	libdirs
+	{
+		"../Dark-Tools/bin/" .. outputdir .. "/Dark-Tools",
+		"../Dark-Resources/bin/" .. outputdir .. "/Dark-Resources"
+	}
 
 	filter "system:windows"
 		systemversion "latest"
@@ -143,7 +147,11 @@ project "Render-Example"
 		"opengl32.lib",
 	}
 
-	libdirs { "Test/downloads" }
+	libdirs
+	{
+		"../Dark-Tools/bin/" .. outputdir .. "/Dark-Tools",
+		"../Dark-Resources/bin/" .. outputdir .. "/Dark-Resources"
+	}
 
 	filter "system:windows"
 		systemversion "latest"
